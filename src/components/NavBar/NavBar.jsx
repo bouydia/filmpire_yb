@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import {
   AppBar,
   Toolbar,
@@ -17,13 +17,41 @@ import {
 import {useTheme} from '@mui/material/styles'
 import { Link } from 'react-router-dom'
 import useStyle from './style'
-import SideBar from '../SideBar/SideBar'
+import { fetchToken, createSessionId ,movieApi} from '../../utils'
+import { Search, SideBar } from '..'
+import { useDispatch, useSelector } from 'react-redux'
+import {setUser,userSelector} from '../../features/auth'
 const NavBar = () => {
+  const {user,isAuthenticated}=useSelector(userSelector)
   const classes = useStyle()
   const isMobile = useMediaQuery('(max-width:600px)')
   const theme = useTheme()
   const [mobileOpen,setMobileOpen]=useState(false)
-  const isAuthenticated=true
+  const dispatch=useDispatch()
+  const token=localStorage.getItem('request_token')
+  const sessionIdFromLocalStorage=localStorage.getItem('session_id')
+  
+  console.log(user)
+  useEffect(() => {
+    const loginUser = async () => {
+      if (token) {
+        if (sessionIdFromLocalStorage) {
+          const { data: userData } = await movieApi.get(`/account?session_id=${sessionIdFromLocalStorage}`)
+                  dispatch(setUser(userData))
+
+        } 
+        else {
+          const sessionId = await createSessionId()
+          const { data: userData } = await movieApi.get(
+          `/account?session_id=${sessionId}`
+          )
+          dispatch(setUser(userData))
+        }
+      }
+    };
+    loginUser()
+  }, [token])
+  
   return (
     <>
       <AppBar position="fixed">
@@ -33,7 +61,7 @@ const NavBar = () => {
               color="inherit"
               edge="start"
               style={{ outline: 'none' }}
-              onClick={() => setMobileOpen((prev)=>!prev)}
+              onClick={() => setMobileOpen(prev => !prev)}
               className={classes.menuButton}
             >
               <Menu />
@@ -42,17 +70,17 @@ const NavBar = () => {
           <IconButton color="inherit" sx={{ ml: 1 }} onClick={() => {}}>
             {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
-          {!isMobile && 'Search ...'}
+          {!isMobile && <Search />}
           <div>
             {!isAuthenticated ? (
-              <Button color="inherit" onClick={() => {}}>
+              <Button color="inherit" onClick={fetchToken}>
                 Login &nbsp; <AccountCircle />
               </Button>
             ) : (
               <Button
                 color="inherit"
                 component={Link}
-                to={`/profile/:id`}
+                to={`/profile/${user.id}`}
                 className={classes.linkButton}
                 onClick={() => {}}
               >
@@ -65,7 +93,7 @@ const NavBar = () => {
               </Button>
             )}
           </div>
-          {isMobile && 'Search...'}
+          {isMobile && <Search />}
         </Toolbar>
       </AppBar>
       <div>
@@ -75,7 +103,7 @@ const NavBar = () => {
               anchor="right"
               variant="temporary"
               open={mobileOpen}
-              onClose={()=>setMobileOpen((prev)=>!prev)}
+              onClose={() => setMobileOpen(prev => !prev)}
               classes={{ paper: classes.drawerPaper }}
               ModalProps={{ keepMounted: true }}
             >
