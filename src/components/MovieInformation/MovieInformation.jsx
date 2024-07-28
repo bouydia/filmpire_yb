@@ -34,13 +34,11 @@ const MovieInformation = () => {
   const [isMovieWatchlisted, setIsMovieWatchlisted] = useState(false)
   const [isMovieFavorited, setIsMovieFavorited] = useState(false)
   useEffect(() => {
-      setIsMovieFavorited(!!favoriteMovies?.results?.find((movie)=>{movie?.id===data?.id}))
+      setIsMovieFavorited(!!favoriteMovies?.results?.find((movie)=>movie?.id===data?.id))
   },[favoriteMovies,data])
   useEffect(() => {
     setIsMovieWatchlisted(
-      !!watchlistMovies?.results?.find(movie => {
-        movie?.id === data?.id
-      })
+      !!watchlistMovies?.results?.find(movie =>movie?.id === data?.id)
     )
   }, [watchlistMovies, data])  
   const addMovieToWatchList = async() => {
@@ -88,7 +86,7 @@ const MovieInformation = () => {
   console.log('Movie Information =>',data);
   return (
     <Grid container className={classes.containerSpaceAround}>
-      <Grid item sm={12} lg={4} style={{display:'flex',marginBottom:'20px'}}>
+      <Grid item sm={12} lg={4} style={{display:'flex',justifyContent:'center',marginBottom:'80px'}}>
         <img
           src={`https://image.tmdb.org/t/p/w500/${data?.poster_path}`}
           alt={data?.title}
@@ -109,7 +107,7 @@ const MovieInformation = () => {
               {(data?.vote_average).toFixed(1)} /10
             </Typography>
           </Box>
-          <Typography variant="h6">{data?.runtime}min | Language ${data?.spoken_languages[0].name}</Typography>
+          <Typography variant="h6">{data?.runtime}min | Language {data?.spoken_languages[0].name}</Typography>
         </Grid>
         <Grid item className={classes.genresContainer}>
           {data?.genres?.map((genre, i) => (

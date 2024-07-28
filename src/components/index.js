@@ -9,4 +9,4 @@ export { default as Search } from './Search/Search'
 export { default as SideBar } from './SideBar/SideBar'
 export { default as Pagination } from './Pagination/Pagination'
 export { default as RatedCards } from './RatedCards/RatedCards'
-
+export { default as FeaturedCard } from './FeaturedCard/FeaturedCard'
